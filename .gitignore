@@ -1,0 +1,4 @@
+*.obj
+Debug/
+x64/
+TestWork.VC.db
