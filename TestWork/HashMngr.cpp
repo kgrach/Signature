@@ -1,25 +1,39 @@
 #include "HashMngr.h"
-#include "ScopeAlgorithmHandle.h"
+#include "ISettings.h"
+#include "ThreadPoolWork.h"
 
-#include <bcrypt.h>
+using namespace ThreadPool;
 
-HashMngr::HashMngr() {
+static auto fFreeAlg = [](BCRYPT_ALG_HANDLE* p) {
+	::BCryptCloseAlgorithmProvider(*p, 0);
+};
 
+HashMngr::HashMngr(std::shared_ptr<ISettings>& settings, fHashCallback fCallback) : m_settings(settings), m_fClientCallback(fCallback) {
+
+	m_hAlg = std::shared_ptr<BCRYPT_ALG_HANDLE>(new BCRYPT_ALG_HANDLE(NULL), fFreeAlg);
 }
 
 bool HashMngr::InitializeWork() {
-	
-	
+
+	if (!::BCryptOpenAlgorithmProvider(m_hAlg.get(), BCRYPT_MD5_ALGORITHM, NULL, 0))
+		return false;
+
+	for (auto i = 0ul; i < GetMainThreadPool().GetMinThreadCount(); i++) {
+		m_vecHashTask.emplace_back(std::move(std::make_unique<HashWork>(m_hAlg, m_fClientCallback)));
+		m_vecHashTask[i]->InitializeWork();
+
+	}
+	//new memory
 
 
-	::BCryptOpenAlgorithmProvider(m_hAlg, BCRYPT_SHA256_ALGORITHM, NULL, 0);
+
 	return true;
 }
 
-bool HashMngr::Hashing(std::unique_ptr<std::vector<unsigned char>>) {
+bool HashMngr::Hashing1(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff) {
 	return true;
 }
 
-void HashMngr::HashComplete(size_t offset, std::unique_ptr<std::vector<unsigned char>> data) {
-
+bool HashMngr::Hashing2(std::unique_ptr<std::vector<unsigned char>> hash) {
+	return true;
 }

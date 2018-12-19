@@ -16,9 +16,9 @@ class WorkManager {
 	std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
 	std::unique_ptr<HashMngr>		m_HashMngr;
 	
-	void ReadCompleteChunck(std::unique_ptr<std::vector<unsigned char>> buff);
-	void HashCompleteChunck(std::unique_ptr<std::vector<unsigned char>> buff);
-	void WriteCompleteChunck(std::unique_ptr<std::vector<unsigned char>> buff);
+	void ReadCompleteChunck(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
+	void HashCompleteChunck(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff, std::unique_ptr<std::vector<unsigned char>> hash);
+	void WriteCompleteChunck(std::unique_ptr<std::vector<unsigned char>> hash);
 
 public:
 	WorkManager(std::shared_ptr<ISettings>&& settings);

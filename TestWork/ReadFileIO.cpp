@@ -2,15 +2,21 @@
 
 using namespace ThreadPool;
 
-ReadFileIOTask::ReadFileIOTask(size_t taskNum, HANDLE hFile, fReadComplete fCallback) : ThreadPoolIO(hFile, m_fCallbackCompleted), m_taskNum(taskNum), m_fCallbackClient(fCallback) {
+ReadFileIO::ReadFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback) : ThreadPoolIO(hFile), m_taskNum(taskNum), m_fCallbackClient(fCallback) {
 	memset(&m_ov, 0, sizeof(m_ov));
 }
 
-bool ReadFileIOTask::IoPending() {
+bool ReadFileIO::IoPending() {
 	return ::ReadFile(m_hFile, m_buff->data(), m_buff->size(), NULL, &m_ov) ? true : false;
 }
 
-void ReadFileIOTask::SetOffset(size_t offset) {
+void ReadFileIO::IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred) {
+	
+	m_buff->resize((size_t)NumberOfBytesTransferred);
+	return m_fCallbackClient(m_taskNum, GetOffset(), std::move(m_buff));
+}
+
+void ReadFileIO::SetOffset(size_t offset) {
 
 	LARGE_INTEGER x;
 
@@ -20,7 +26,7 @@ void ReadFileIOTask::SetOffset(size_t offset) {
 	m_ov.OffsetHigh = x.HighPart;
 }
 
-size_t ReadFileIOTask::GetOffset() const {
+size_t ReadFileIO::GetOffset() const {
 
 	LARGE_INTEGER x;
 
@@ -30,12 +36,12 @@ size_t ReadFileIOTask::GetOffset() const {
 	return (size_t)x.QuadPart;
 }
 
-void ReadFileIOTask::StartReadFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff) {
+void ReadFileIO::StartReadFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff) {
 
 	m_buff = std::move(buff);
 	SetOffset(offset);
 
-	StartIo();
+	StartIO();
 }
 
 

@@ -22,15 +22,15 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{5f82175c-c808-428a-8d68-69b5d32b9b1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThreadPool\Work">
+      <UniqueIdentifier>{6f394b07-d52b-47e2-8120-001c319cb862}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPool.h">
       <Filter>ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="ThreadPoolTimer.h">
-      <Filter>ThreadPool</Filter>
-    </ClInclude>
-    <ClInclude Include="ThreadPoolWork.h">
       <Filter>ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="WorkManager.h">
@@ -66,8 +66,11 @@
     <ClInclude Include="ScopeHandle.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ScopeAlgorithmHandle.h">
-      <Filter>Utils</Filter>
+    <ClInclude Include="ThreadPoolWork.h">
+      <Filter>ThreadPool\Work</Filter>
+    </ClInclude>
+    <ClInclude Include="HashWork.h">
+      <Filter>ThreadPool\Work</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="WriteFileIO.cpp">
       <Filter>ThreadPool\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="HashWork.cpp">
+      <Filter>ThreadPool\Work</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,8 @@
 
 class ISettings;
 
+using fReadChunckCallback = std::function<void(size_t, std::unique_ptr<std::vector<unsigned char>>)>;
+
 class ReadFileMngr {
 
 	std::shared_ptr<ISettings> m_settings;
@@ -20,18 +22,17 @@ class ReadFileMngr {
 
 	std::atomic<unsigned __int64> m_offset;
 
-	std::vector<std::shared_ptr<ReadFileIOTask>> m_vecIOTask;
-	concurrency::concurrent_queue<std::shared_ptr<ReadFileIOTask>> m_vecIOTaskCompleted;
+	std::vector<std::shared_ptr<ReadFileIO>> m_vecIOTask;
+	concurrency::concurrent_queue<std::shared_ptr<ReadFileIO>> m_vecIOTaskCompleted;
 
 
-	std::function<void(std::unique_ptr<std::vector<unsigned char>>)> m_fCallback;
-
+	std::function<void(size_t, std::unique_ptr<std::vector<unsigned char>>)> m_fCallback;
 	
 	void ReadComplete(size_t taskNum, size_t offset, std::unique_ptr<std::vector<unsigned char>> data);
 
 public:
-	ReadFileMngr(std::shared_ptr<ISettings>& settings, std::function<void(std::unique_ptr<std::vector<unsigned char>>)>);
+	ReadFileMngr(std::shared_ptr<ISettings>& settings, fReadChunckCallback f);
 
-	bool Reading(std::unique_ptr<std::vector<unsigned char>>&& buff);
+	bool Reading(std::unique_ptr<std::vector<unsigned char>> buff);
 	bool InitializeWork();
 };

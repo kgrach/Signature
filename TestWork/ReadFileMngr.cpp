@@ -8,7 +8,7 @@
 using namespace ThreadPool;
 using namespace std;
 
-ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings, std::function<void(std::unique_ptr<std::vector<unsigned char>>)> fCallback) : m_settings(settings), m_fCallback(fCallback) {
+ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings, fReadChunckCallback fCallback) : m_settings(settings), m_fCallback(fCallback) {
 
 }
 
@@ -30,24 +30,23 @@ bool ReadFileMngr::InitializeWork() {
 	};
 
 	for (auto i = 0ul; i < GetMainThreadPool().GetMaxThreadCount(); i++) {
-		m_vecIOTask.emplace_back(move(make_unique<ReadFileIOTask>(i, m_hfileSrc, fReadComplete)));
+		m_vecIOTask.emplace_back(move(make_unique<ReadFileIO>(i, m_hfileSrc, fReadComplete)));
 		m_vecIOTaskCompleted.push(m_vecIOTask[i]);
-		Reading(move(make_unique<vector<unsigned char>>(m_settings->GetChunkSize())));
 	}
 
 	return true;
 }
 
-bool ReadFileMngr::Reading(unique_ptr<vector<unsigned char>>&& buff) {
+bool ReadFileMngr::Reading(unique_ptr<vector<unsigned char>> buff) {
 
-	std::shared_ptr<ReadFileIOTask> io;
+	std::shared_ptr<ReadFileIO> io;
 
 	if (m_vecIOTaskCompleted.try_pop(io)) {
 		
 		size_t offset = m_offset.fetch_add(m_settings->GetChunkSize());
 
 		io->StartReadFileIOTask(offset, move(buff));
-
+		
 		return true;
 	}
 	
@@ -56,6 +55,7 @@ bool ReadFileMngr::Reading(unique_ptr<vector<unsigned char>>&& buff) {
 
 void ReadFileMngr::ReadComplete(size_t taskNum, size_t offset, std::unique_ptr<std::vector<unsigned char>> data) {
 
-	m_fCallback(move(data));
-	///process data
+	m_vecIOTaskCompleted.push(m_vecIOTask[taskNum]);
+
+	m_fCallback(offset, move(data));
 };

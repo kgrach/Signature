@@ -26,24 +26,20 @@ bool WriteFileMngr::InitializeWork() {
 	};
 
 	for (auto i = 0ul; i < GetMainThreadPool().GetMaxThreadCount(); i++) {
-		m_vecIOTask.emplace_back(move(make_unique<WriteFileIOTask>(i, m_hfileDest, fReadComplete)));
+		m_vecIOTask.emplace_back(move(make_unique<WriteFileIO>(i, m_hfileDest, fReadComplete)));
 		m_vecIOTaskCompleted.push(m_vecIOTask[i]);
-		Writing(move(make_unique<vector<unsigned char>>(m_settings->GetChunkSize())));
 	}
 
 	return true;
 }
 
-bool WriteFileMngr::Writing(unique_ptr<vector<unsigned char>>&& buff) {
+bool WriteFileMngr::Writing(size_t offset, unique_ptr<vector<unsigned char>> buff) {
 
-	std::shared_ptr<WriteFileIOTask> io;
+	std::shared_ptr<WriteFileIO> io;
 
 	if (m_vecIOTaskCompleted.try_pop(io)) {
 
-		size_t offset = m_offset.fetch_add(m_settings->GetChunkSize());
-
 		io->StartWriteFileIOTask(offset, move(buff));
-
 		return true;
 	}
 

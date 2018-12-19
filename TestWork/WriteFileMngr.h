@@ -19,8 +19,8 @@ class WriteFileMngr {
 
 	std::atomic<unsigned __int64> m_offset;
 
-	std::vector<std::shared_ptr<WriteFileIOTask>> m_vecIOTask;
-	concurrency::concurrent_queue<std::shared_ptr<WriteFileIOTask>> m_vecIOTaskCompleted;
+	std::vector<std::shared_ptr<WriteFileIO>> m_vecIOTask;
+	concurrency::concurrent_queue<std::shared_ptr<WriteFileIO>> m_vecIOTaskCompleted;
 
 
 	std::function<void(std::unique_ptr<std::vector<unsigned char>>)> m_fCallback;
@@ -31,6 +31,6 @@ class WriteFileMngr {
 public:
 	WriteFileMngr(std::shared_ptr<ISettings>& settings, std::function<void(std::unique_ptr<std::vector<unsigned char>>)>);
 
-	bool Writing(std::unique_ptr<std::vector<unsigned char>>&& buff);
+	bool Writing(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
 	bool InitializeWork();
 };
