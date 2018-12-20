@@ -2,7 +2,7 @@
 #include "WorkManager.h"
 #include "ReadFileMngr.h"
 #include "WriteFileMngr.h"
-#include "ISettings.h"
+#include "Settings.h"
 
 using namespace ThreadPool;
 
@@ -13,7 +13,6 @@ WorkManager::WorkManager(std::shared_ptr<ISettings>&& settings) : m_settings(mov
 	};
 
 	m_ReadFileMngr = std::make_unique<ReadFileMngr>(m_settings, fReadComplete);
-
 
 	auto fHashComplete = [this](size_t offset, std::unique_ptr<std::vector<unsigned char>> buff, std::unique_ptr<std::vector<unsigned char>> hash) {
 		return this->HashCompleteChunck(offset, std::move(buff), std::move(hash));
@@ -32,6 +31,10 @@ bool WorkManager::StartWork() noexcept {
 
 	GetMainThreadPool().StartingWork();
 
+	m_ReadFileMngr->InitializeWork();
+	m_HashMngr->InitializeWork();
+	m_WriteFileMngr->InitializeWork();
+
 	bool start_done;
 
 	do {
@@ -39,9 +42,15 @@ bool WorkManager::StartWork() noexcept {
 		auto buff = std::make_unique<std::vector<unsigned char>>(m_settings->GetChunkSize());
 		start_done = m_ReadFileMngr->Reading(std::move(buff));
 
+		break;
 	} while (start_done);
 	
+
 	return true;
+}
+
+void WorkManager::StopWork() {
+
 }
 
 

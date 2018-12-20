@@ -6,16 +6,19 @@
 #include <vector>
 #include <functional>
 
-using fHashCallback = std::function<void(size_t, std::unique_ptr<std::vector<unsigned char>>, std::unique_ptr<std::vector<unsigned char>>)>;
+using fHashCallback = std::function<void(size_t, size_t, std::unique_ptr<std::vector<unsigned char>>, std::unique_ptr<std::vector<unsigned char>>)>;
 
 class HashWork : public ThreadPool::ThreadPoolWork {
 	
+	size_t m_num;
 	std::shared_ptr<BCRYPT_ALG_HANDLE>	m_hAlg;
 	std::shared_ptr<BCRYPT_HASH_HANDLE> m_hHash;
 
 	size_t m_offset;
 	std::unique_ptr<std::vector<unsigned char>>	m_buff;
 	std::unique_ptr<std::vector<unsigned char>>	m_hash;
+
+	std::unique_ptr<std::vector<unsigned char>>	m_localhash;
 
 	fHashCallback m_fCallbackClient;
 
@@ -27,7 +30,7 @@ class HashWork : public ThreadPool::ThreadPoolWork {
 
 public:
 
-	HashWork(std::shared_ptr<BCRYPT_ALG_HANDLE>& h_Alg, fHashCallback fCallback);
+	HashWork(size_t num, std::shared_ptr<BCRYPT_ALG_HANDLE>& h_Alg, fHashCallback fCallback);
 	bool InitializeWork();
 
 	void StartHashWork(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff, std::unique_ptr<std::vector<unsigned char>> hash);

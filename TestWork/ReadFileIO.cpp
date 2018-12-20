@@ -2,7 +2,7 @@
 
 using namespace ThreadPool;
 
-ReadFileIO::ReadFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback) : ThreadPoolIO(hFile), m_taskNum(taskNum), m_fCallbackClient(fCallback) {
+ReadFileIO::ReadFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback) : ThreadPoolIO(hFile), m_hFile(hFile), m_taskNum(taskNum), m_fCallbackClient(fCallback) {
 	memset(&m_ov, 0, sizeof(m_ov));
 }
 
@@ -12,7 +12,7 @@ bool ReadFileIO::IoPending() {
 
 void ReadFileIO::IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred) {
 	
-	m_buff->resize((size_t)NumberOfBytesTransferred);
+	m_buff->resize((*NumberOfBytesTransferred).QuadPart);
 	return m_fCallbackClient(m_taskNum, GetOffset(), std::move(m_buff));
 }
 
@@ -33,7 +33,7 @@ size_t ReadFileIO::GetOffset() const {
 	x.LowPart = m_ov.Offset;
 	x.HighPart = m_ov.OffsetHigh;
 
-	return (size_t)x.QuadPart;
+	return x.QuadPart;
 }
 
 void ReadFileIO::StartReadFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff) {

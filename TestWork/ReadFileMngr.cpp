@@ -29,7 +29,7 @@ bool ReadFileMngr::InitializeWork() {
 		return this->ReadComplete(taskNum, offset, move(data));
 	};
 
-	for (auto i = 0ul; i < GetMainThreadPool().GetMaxThreadCount(); i++) {
+	for (auto i = 0ul; i < GetMainThreadPool().GetMinThreadCount(); i++) {
 		m_vecIOTask.emplace_back(move(make_unique<ReadFileIO>(i, m_hfileSrc, fReadComplete)));
 		m_vecIOTaskCompleted.push(m_vecIOTask[i]);
 	}

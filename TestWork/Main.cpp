@@ -12,4 +12,10 @@ void main(int argc, char** argv) {
 	WorkManager mngr(settings->GetInterface());
 	mngr.StartWork();
 	
+
+	while (true) {
+		Sleep(0);
+	}
+	
+	mngr.StopWork();
 }

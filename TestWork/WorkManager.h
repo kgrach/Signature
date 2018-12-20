@@ -23,4 +23,5 @@ class WorkManager {
 public:
 	WorkManager(std::shared_ptr<ISettings>&& settings);
 	bool StartWork() noexcept;
+	void StopWork();
 };
