@@ -1,20 +1,42 @@
 #pragma once
 
 #include "ThreadPoolIo.h"
+#include "ItemConveyer.h"
 
-#include <memory>
-#include <vector>
-#include <functional>
 
+template<>
+bool ThreadPool::ThreadPoolIO<IItemRead>::IoPending(std::shared_ptr<IOOverlapped<IItemRead>>& ov_item) {
+	OVERLAPPED* ov = static_cast<OVERLAPPED*>(ov_item.get());
+
+	ov_item->SetOffset(ov_item->m_item->GetOffset());
+
+	return ::ReadFile(m_hFile, ov_item->m_item->GetBuff().data(), ov_item->m_item->GetBuff().size(), NULL, ov) ? true : false;
+}
+
+template <>
+void ThreadPool::ThreadPoolIO<IItemRead>::IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred) {
+
+	IOOverlapped<IItemRead> *p = static_cast<IOOverlapped<IItemRead>*>(Overlapped);
+
+	m_ov_complete.push(m_ov[p->m_num]);
+
+	p->m_item->GetBuff().resize((size_t)NumberOfBytesTransferred);
+
+	p->m_item->Callback();
+}
+
+
+using ReadFileIO = ThreadPool::ThreadPoolIO<IItemRead>;
+
+/*
 using fReadComplete = std::function<void(size_t, size_t, std::unique_ptr<std::vector<unsigned char>>)>;
+
+class ItemConveyer;
 
 class ReadFileIO : public ThreadPool::ThreadPoolIO {
 
 	HANDLE							m_hFile;
-	size_t							m_taskNum;
 	OVERLAPPED						m_ov;
-
-	std::unique_ptr<std::vector<unsigned char>>	m_buff;
 
 	fReadComplete m_fCallbackClient;
 	
@@ -26,6 +48,6 @@ class ReadFileIO : public ThreadPool::ThreadPoolIO {
 
 public:
 
-	ReadFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback);
-	void StartReadFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
-};
+	ReadFileIO(HANDLE hFile, fReadComplete fCallback);
+	void StartReadFileIOTask(std::shared_ptr<ItemConveyer>&);
+};*/

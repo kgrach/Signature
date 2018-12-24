@@ -8,7 +8,7 @@
 
 #include "ScopeHandle.h"
 #include "WriteFileIO.h"
-
+/*
 class ISettings;
 
 class WriteFileMngr {
@@ -33,4 +33,4 @@ public:
 
 	bool Writing(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
 	bool InitializeWork();
-};
+};*/

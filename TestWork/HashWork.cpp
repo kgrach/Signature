@@ -50,3 +50,4 @@ void HashWork::StartHashWork(size_t offset, std::unique_ptr<std::vector<unsigned
 
 	StartWork();
 }
+

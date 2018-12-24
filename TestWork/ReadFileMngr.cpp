@@ -1,15 +1,16 @@
 #include "ReadFileMngr.h"
-#include "ThreadPool.h"
 #include "ISettings.h"
+#include "ItemConveyer.h"
+#include "ReadFileIO.h"
 
-#include <functional>
-#include <memory>
-
-using namespace ThreadPool;
 using namespace std;
 
-ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings, fReadChunckCallback fCallback) : m_settings(settings), m_fCallback(fCallback) {
+static auto HandleDeleter = [](HANDLE* p) {
+	::CloseHandle(*p);
+};
 
+ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings) : m_settings(settings){
+	//m_hfileSrc = std::shared_ptr<HANDLE>(new HANDLE(INVALID_HANDLE_VALUE), HandleDeleter);
 }
 
 bool ReadFileMngr::InitializeWork() {
@@ -25,37 +26,15 @@ bool ReadFileMngr::InitializeWork() {
 
 	m_offset = 0ull;
 
-	auto fReadComplete = [this](size_t taskNum, size_t offset, std::unique_ptr<std::vector<unsigned char>> data) {
-		return this->ReadComplete(taskNum, offset, move(data));
-	};
-
-	for (auto i = 0ul; i < GetMainThreadPool().GetMinThreadCount(); i++) {
-		m_vecIOTask.emplace_back(move(make_unique<ReadFileIO>(i, m_hfileSrc, fReadComplete)));
-		m_vecIOTaskCompleted.push(m_vecIOTask[i]);
-	}
+	m_io = std::move(std::make_shared<ThreadPool::ThreadPoolIO<IItemRead>>(m_hfileSrc));
 
 	return true;
 }
 
-bool ReadFileMngr::Reading(unique_ptr<vector<unsigned char>> buff) {
+bool ReadFileMngr::Reading(std::shared_ptr<IItemRead>& item) {
 
-	std::shared_ptr<ReadFileIO> io;
+	item->GetBuff().resize(m_settings->GetChunkSize());
+	item->SetOffset(m_offset.fetch_add(m_settings->GetChunkSize()));
 
-	if (m_vecIOTaskCompleted.try_pop(io)) {
-		
-		size_t offset = m_offset.fetch_add(m_settings->GetChunkSize());
-
-		io->StartReadFileIOTask(offset, move(buff));
-		
-		return true;
-	}
-	
-	return false;
+	return m_io->StartIO(item);
 }
-
-void ReadFileMngr::ReadComplete(size_t taskNum, size_t offset, std::unique_ptr<std::vector<unsigned char>> data) {
-
-	m_vecIOTaskCompleted.push(m_vecIOTask[taskNum]);
-
-	m_fCallback(offset, move(data));
-};

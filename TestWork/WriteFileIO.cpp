@@ -1,5 +1,5 @@
 #include "WriteFileIO.h"
-
+/*
 using namespace ThreadPool;
 
 WriteFileIO::WriteFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback) : ThreadPoolIO(hFile), m_taskNum(taskNum), m_fCallbackClient(fCallback) {
@@ -43,5 +43,5 @@ void WriteFileIO::StartWriteFileIOTask(size_t offset, std::unique_ptr<std::vecto
 
 	StartIO();
 }
-
+*/
 

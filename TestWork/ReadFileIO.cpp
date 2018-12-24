@@ -1,4 +1,5 @@
-#include "ReadFileIO.h"
+/*#include "ReadFileIO.h"
+#include "ItemConveyer.h"
 
 using namespace ThreadPool;
 
@@ -36,12 +37,11 @@ size_t ReadFileIO::GetOffset() const {
 	return x.QuadPart;
 }
 
-void ReadFileIO::StartReadFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff) {
+void ReadFileIO::StartReadFileIOTask(std::shared_ptr<ItemConveyer>& item) {
 
-	m_buff = std::move(buff);
-	SetOffset(offset);
+	SetOffset(item->m_offset);
 
-	StartIO();
+	StartIO(item);
 }
-
+*/
 

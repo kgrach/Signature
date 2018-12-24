@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
-
+/*
 using fReadComplete = std::function<void(size_t, size_t, std::unique_ptr<std::vector<unsigned char>>)>;
 
 class WriteFileIO : public ThreadPool::ThreadPoolIO {
@@ -28,4 +28,4 @@ public:
 
 	WriteFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback);
 	void StartWriteFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
-};
+};*/

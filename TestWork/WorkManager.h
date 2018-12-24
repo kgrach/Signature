@@ -6,6 +6,7 @@
 #include "ReadFileMngr.h"
 #include "WriteFileMngr.h"
 #include "HashMngr.h"
+#include "ItemConveyer.h"
 
 class ISettings;
 
@@ -13,12 +14,14 @@ class WorkManager {
 	std::shared_ptr<ISettings> m_settings;
 	
 	std::unique_ptr<ReadFileMngr>	m_ReadFileMngr;
-	std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
+	//std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
 	std::unique_ptr<HashMngr>		m_HashMngr;
+
+	concurrency::concurrent_queue<std::shared_ptr<ItemConveyer>> m_ItemsCompleted;
 	
-	void ReadCompleteChunck(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
-	void HashCompleteChunck(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff, std::unique_ptr<std::vector<unsigned char>> hash);
-	void WriteCompleteChunck(std::unique_ptr<std::vector<unsigned char>> hash);
+	void ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item);
+	void HashCompleteChunck(std::shared_ptr<ItemConveyer>& item);
+	void WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item);
 
 public:
 	WorkManager(std::shared_ptr<ISettings>&& settings);

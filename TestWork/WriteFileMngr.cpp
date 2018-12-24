@@ -7,7 +7,7 @@
 
 using namespace ThreadPool;
 using namespace std;
-
+/*
 WriteFileMngr::WriteFileMngr(std::shared_ptr<ISettings>& settings, std::function<void(std::unique_ptr<std::vector<unsigned char>>)> fCallback) : m_settings(settings), m_fCallback(fCallback) {
 
 }
@@ -53,3 +53,4 @@ void WriteFileMngr::WriteComplete(size_t taskNum, size_t offset, std::unique_ptr
 	m_fCallback(move(data));
 	///process data
 };
+*/

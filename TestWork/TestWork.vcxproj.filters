@@ -72,6 +72,12 @@
     <ClInclude Include="HashWork.h">
       <Filter>ThreadPool\Work</Filter>
     </ClInclude>
+    <ClInclude Include="ItemConveyer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedHANDLE.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ThreadPool.cpp">
@@ -103,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="HashWork.cpp">
       <Filter>ThreadPool\Work</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemConveyer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

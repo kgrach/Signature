@@ -37,7 +37,6 @@ public:
 };
 
 
-
 /*
 template<typename T, typename F_USER_CALLCBACK = std::function<void(const typename T&)>>
 class SequentialTasks : public WorkItem {

@@ -27,6 +27,10 @@ class Settings : public ISettings {
 public:
 	Settings() = default;
 
+	~Settings() {
+
+	}
+
 	std::shared_ptr<ISettings> GetInterface();
 	bool ParseConsoleArgs(const int argc, const char * const* const argv) noexcept;
 };
