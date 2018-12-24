@@ -27,27 +27,3 @@ void ThreadPool::ThreadPoolIO<IItemRead>::IoCompletion(OVERLAPPED* Overlapped, U
 
 
 using ReadFileIO = ThreadPool::ThreadPoolIO<IItemRead>;
-
-/*
-using fReadComplete = std::function<void(size_t, size_t, std::unique_ptr<std::vector<unsigned char>>)>;
-
-class ItemConveyer;
-
-class ReadFileIO : public ThreadPool::ThreadPoolIO {
-
-	HANDLE							m_hFile;
-	OVERLAPPED						m_ov;
-
-	fReadComplete m_fCallbackClient;
-	
-	void IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred);
-	bool IoPending();
-
-	void SetOffset(size_t offset);
-	size_t GetOffset() const;
-
-public:
-
-	ReadFileIO(HANDLE hFile, fReadComplete fCallback);
-	void StartReadFileIOTask(std::shared_ptr<ItemConveyer>&);
-};*/

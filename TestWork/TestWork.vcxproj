@@ -176,11 +176,9 @@
     <ClCompile Include="ReadFileMngr.cpp" />
     <ClCompile Include="HashMngr.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ReadFileIO.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="WorkManager.cpp" />
-    <ClCompile Include="WriteFileIO.cpp" />
     <ClCompile Include="WriteFileMngr.cpp" />
   </ItemGroup>
   <ItemGroup>

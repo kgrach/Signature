@@ -95,17 +95,11 @@
     <ClCompile Include="HashMngr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReadFileIO.cpp">
-      <Filter>ThreadPool\IO</Filter>
-    </ClCompile>
     <ClCompile Include="ReadFileMngr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WriteFileMngr.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WriteFileIO.cpp">
-      <Filter>ThreadPool\IO</Filter>
     </ClCompile>
     <ClCompile Include="HashWork.cpp">
       <Filter>ThreadPool\Work</Filter>

@@ -25,14 +25,13 @@ public:
 
 	virtual std::vector<unsigned char>& GetBuff() = 0;
 	virtual std::vector<unsigned char>& GetHash() = 0;
-
-	virtual void Callback(void) = 0;
 };
 
 class IItemWrite {
 
 public:
 	 
+	virtual void SetOffset(size_t) = 0;
 	virtual size_t GetOffset() const = 0;
 	virtual std::vector<unsigned char>& GetHash() = 0;
 	
@@ -62,7 +61,7 @@ public:
 	ItemConveyer::ItemConveyer(const ItemConveyer &) = default;
 
 	std::shared_ptr<IItemRead> GetItemReadIface(std::function<void(void)> f);
-	std::shared_ptr<IItemHash> GetItemHashIface(std::function<void(void)> f);
+	std::shared_ptr<IItemHash> GetItemHashIface();
 	std::shared_ptr<IItemWrite> GetItemWriteIface(std::function<void(void)> f);
 };
 

@@ -14,13 +14,12 @@ class WorkManager {
 	std::shared_ptr<ISettings> m_settings;
 	
 	std::unique_ptr<ReadFileMngr>	m_ReadFileMngr;
-	//std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
 	std::unique_ptr<HashMngr>		m_HashMngr;
+	std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
 
-	concurrency::concurrent_queue<std::shared_ptr<ItemConveyer>> m_ItemsCompleted;
+	std::vector<std::shared_ptr<ItemConveyer>> m_ItemsCompleted;
 	
 	void ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item);
-	void HashCompleteChunck(std::shared_ptr<ItemConveyer>& item);
 	void WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item);
 
 public:

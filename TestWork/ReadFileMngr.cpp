@@ -5,12 +5,7 @@
 
 using namespace std;
 
-static auto HandleDeleter = [](HANDLE* p) {
-	::CloseHandle(*p);
-};
-
 ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings) : m_settings(settings){
-	//m_hfileSrc = std::shared_ptr<HANDLE>(new HANDLE(INVALID_HANDLE_VALUE), HandleDeleter);
 }
 
 bool ReadFileMngr::InitializeWork() {
@@ -35,6 +30,9 @@ bool ReadFileMngr::Reading(std::shared_ptr<IItemRead>& item) {
 
 	item->GetBuff().resize(m_settings->GetChunkSize());
 	item->SetOffset(m_offset.fetch_add(m_settings->GetChunkSize()));
+
+	if (item->GetOffset() >= m_hfileSrc)
+		return false;
 
 	return m_io->StartIO(item);
 }

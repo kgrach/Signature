@@ -1,31 +1,27 @@
 #pragma once
 
 #include "ThreadPoolIo.h"
+#include "ItemConveyer.h"
 
-#include <memory>
-#include <vector>
-#include <functional>
-/*
-using fReadComplete = std::function<void(size_t, size_t, std::unique_ptr<std::vector<unsigned char>>)>;
 
-class WriteFileIO : public ThreadPool::ThreadPoolIO {
+template<>
+bool ThreadPool::ThreadPoolIO<IItemWrite>::IoPending(std::shared_ptr<IOOverlapped<IItemWrite>>& ov_item) {
+	OVERLAPPED* ov = static_cast<OVERLAPPED*>(ov_item.get());
 
-	HANDLE							m_hFile;
-	size_t							m_taskNum;
-	OVERLAPPED						m_ov;
+	ov_item->SetOffset(ov_item->m_item->GetOffset());
 
-	std::unique_ptr<std::vector<unsigned char>>	m_buff;
+	return ::WriteFile(m_hFile, ov_item->m_item->GetHash().data(), ov_item->m_item->GetHash().size(), NULL, ov) ? true : false;
+}
 
-	fReadComplete m_fCallbackClient;
+template <>
+void ThreadPool::ThreadPoolIO<IItemWrite>::IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred) {
 
-	virtual void IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred);
-	virtual bool IoPending();
+	IOOverlapped<IItemWrite> *p = static_cast<IOOverlapped<IItemWrite>*>(Overlapped);
 
-	void SetOffset(size_t offset);
-	size_t GetOffset() const;
+	m_ov_complete.push(m_ov[p->m_num]);
 
-public:
+	p->m_item->Callback();
+}
 
-	WriteFileIO(size_t taskNum, HANDLE hFile, fReadComplete fCallback);
-	void StartWriteFileIOTask(size_t offset, std::unique_ptr<std::vector<unsigned char>> buff);
-};*/
+
+using WriteFileIO = ThreadPool::ThreadPoolIO<IItemWrite>;

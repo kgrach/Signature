@@ -12,11 +12,7 @@ WorkManager::WorkManager(std::shared_ptr<ISettings>&& settings) : m_settings(mov
 
 	m_HashMngr = std::make_unique<HashMngr>(m_settings);
 
-	/*auto fWriteComplete = [this](std::unique_ptr<std::vector<unsigned char>> buff) {
-		return this->WriteCompleteChunck(move(buff));
-	};
-
-	m_WriteFileMngr = std::make_unique<WriteFileMngr>(m_settings, fWriteComplete);*/
+	m_WriteFileMngr = std::make_unique<WriteFileMngr>(m_settings);
 }
 
 bool WorkManager::StartWork() noexcept {
@@ -25,23 +21,11 @@ bool WorkManager::StartWork() noexcept {
 
 	m_ReadFileMngr->InitializeWork();
 	m_HashMngr->InitializeWork();
-
-	//m_WriteFileMngr->InitializeWork();
+	m_WriteFileMngr->InitializeWork();
 
 	for (unsigned long i = 0; i < GetMainThreadPool().GetMaxThreadCount(); i++) {
 		auto p = std::make_shared<ItemConveyer>();
-		m_ItemsCompleted.push(p);
-	}
-
-	std::shared_ptr<ItemConveyer> tmp;
-
-	while (m_ItemsCompleted.try_pop(tmp)) {
-
-		auto f = [_item = tmp, this]() mutable {
-			return this->ReadCompleteChunck(_item);
-		};
-
-		m_ReadFileMngr->Reading(tmp->GetItemReadIface(f));
+		WriteCompleteChunck(p);
 	}
 
 	return true;
@@ -53,16 +37,21 @@ void WorkManager::StopWork() {
 
 void WorkManager::ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
 
-	std::function<void(void)> f;
-	m_HashMngr->Hashing(item->GetItemHashIface(f));
-}
+	m_HashMngr->Hashing(item->GetItemHashIface());
 
-void WorkManager::HashCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
-	/*m_ReadFileMngr->Reading(std::move(buff));
-	m_WriteFileMngr->Writing(offset/hash->size(), std::move(hash));*/
+	auto f = [_item = item, this]() mutable {
+		return this->WriteCompleteChunck(_item);
+	};
+
+	m_WriteFileMngr->Writing(item->GetItemWriteIface(f));
 }
 
 void WorkManager::WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
-	//m_HashMngr->Hashing2(std::move(hash));
+	
+	auto f = [_item = item, this]() mutable {
+		return this->ReadCompleteChunck(_item);
+	};
+
+	m_ReadFileMngr->Reading(item->GetItemReadIface(f));
 }
 
