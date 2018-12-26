@@ -18,14 +18,14 @@ WorkManager::WorkManager(std::shared_ptr<ISettings>&& settings) : m_settings(mov
 bool WorkManager::StartWork() noexcept {
 
 	GetMainThreadPool().StartingWork();
-
-	m_ReadFileMngr->InitializeWork();
+	size_t s;
+	m_ReadFileMngr->InitializeWork(s);
 	m_HashMngr->InitializeWork();
-	m_WriteFileMngr->InitializeWork();
+	m_WriteFileMngr->InitializeWork(s);
 
-	for (unsigned long i = 0; i < GetMainThreadPool().GetMaxThreadCount(); i++) {
-		auto p = std::make_shared<ItemConveyer>();
-		WriteCompleteChunck(p);
+	for (unsigned long i = 0; i < GetMainThreadPool().GetMinThreadCount(); i++) {
+		m_Items.emplace_back(std::make_shared<ItemConveyer>());
+		WriteCompleteChunck(m_Items[i]);
 	}
 
 	return true;
@@ -37,21 +37,15 @@ void WorkManager::StopWork() {
 
 void WorkManager::ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
 
-	m_HashMngr->Hashing(item->GetItemHashIface());
-
-	auto f = [_item = item, this]() mutable {
-		return this->WriteCompleteChunck(_item);
-	};
-
-	m_WriteFileMngr->Writing(item->GetItemWriteIface(f));
+	m_WriteFileMngr->Writing(item->GetItemWriteIface([item, this]() mutable { return this->WriteCompleteChunck(item);} ));
 }
 
 void WorkManager::WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
-	
-	auto f = [_item = item, this]() mutable {
-		return this->ReadCompleteChunck(_item);
-	};
 
-	m_ReadFileMngr->Reading(item->GetItemReadIface(f));
+/*	{
+		auto p = item->GetItemReadIface([item, this]() mutable { return this->ReadCompleteChunck(item); });
+	}*/
+
+	m_ReadFileMngr->Reading(item->GetItemReadIface([item, this]() mutable { return this->ReadCompleteChunck(item); }));
 }
 

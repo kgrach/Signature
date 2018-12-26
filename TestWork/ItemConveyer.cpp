@@ -1,8 +1,8 @@
 #include "ItemConveyer.h"
 
 
-std::shared_ptr<IItemRead> ItemConveyer::GetItemReadIface(std::function<void(void)> f) {
-	m_fCallback = f;
+std::shared_ptr<IItemRead> ItemConveyer::GetItemReadIface(std::function<void(void)>&& f) {
+	m_fCallback = std::move(f);
 	return shared_from_this();
 }
 
@@ -10,8 +10,8 @@ std::shared_ptr<IItemHash> ItemConveyer::GetItemHashIface() {
 	return shared_from_this();
 }
 
-std::shared_ptr<IItemWrite> ItemConveyer::GetItemWriteIface(std::function<void(void)> f) {
-	m_fCallback = f;
+std::shared_ptr<IItemWrite> ItemConveyer::GetItemWriteIface(std::function<void(void)>&& f) {
+	m_fCallback = std::move(f);
 	return shared_from_this();
 }
 

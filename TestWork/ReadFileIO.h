@@ -18,11 +18,11 @@ void ThreadPool::ThreadPoolIO<IItemRead>::IoCompletion(OVERLAPPED* Overlapped, U
 
 	IOOverlapped<IItemRead> *p = static_cast<IOOverlapped<IItemRead>*>(Overlapped);
 
-	m_ov_complete.push(m_ov[p->m_num]);
-
 	p->m_item->GetBuff().resize((size_t)NumberOfBytesTransferred);
-
 	p->m_item->Callback();
+	p->m_item = nullptr;
+
+	m_ov_complete.push(m_ov[p->m_num]);
 }
 
 

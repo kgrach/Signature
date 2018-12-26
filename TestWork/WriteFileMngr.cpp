@@ -7,12 +7,18 @@ WriteFileMngr::WriteFileMngr(std::shared_ptr<ISettings>& settings) : m_settings(
 
 }
 
-bool WriteFileMngr::InitializeWork() {
+bool WriteFileMngr::InitializeWork(size_t size) {
 
 	m_hfileDest = ::CreateFile(m_settings->GetOutFileName().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED, NULL);
 
 	if (!m_hfileDest)
 		return false;
+
+	LARGE_INTEGER _size;
+	_size.QuadPart = size;
+
+	SetFilePointerEx(m_hfileDest, _size, NULL, FILE_BEGIN);
+	SetEndOfFile(m_hfileDest);
 
 	m_io = std::move(std::make_shared<ThreadPool::ThreadPoolIO<IItemWrite>>(m_hfileDest));
 
@@ -21,8 +27,7 @@ bool WriteFileMngr::InitializeWork() {
 
 bool WriteFileMngr::Writing(std::shared_ptr<IItemWrite>& item) {
 
-
-	item->SetOffset(item->GetOffset()/ item->GetHash().size());
+	//item->SetOffset(item->GetOffset()/ item->GetHash().size());
 
 	return m_io->StartIO(item);
 }

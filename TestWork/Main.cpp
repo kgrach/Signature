@@ -13,7 +13,7 @@ void main(int argc, char** argv) {
 	mngr.StartWork();
 
 	while (true) {
-		Sleep(0);
+		Sleep(100000);
 	}
 	
 	mngr.StopWork();

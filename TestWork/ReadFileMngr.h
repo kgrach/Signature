@@ -27,5 +27,5 @@ public:
 	ReadFileMngr(std::shared_ptr<ISettings>& settings);
 
 	bool Reading(std::shared_ptr<IItemRead>& item);
-	bool InitializeWork();
+	bool InitializeWork(size_t& size);
 };

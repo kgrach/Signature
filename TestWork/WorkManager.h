@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <concurrent_queue.h>
 
 #include "ReadFileMngr.h"
 #include "WriteFileMngr.h"
@@ -17,7 +18,8 @@ class WorkManager {
 	std::unique_ptr<HashMngr>		m_HashMngr;
 	std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
 
-	std::vector<std::shared_ptr<ItemConveyer>> m_ItemsCompleted;
+	std::vector<std::shared_ptr<ItemConveyer>> m_Items;
+	concurrency::concurrent_queue<std::shared_ptr<ItemConveyer>> m_ItemsComplete;
 	
 	void ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item);
 	void WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item);

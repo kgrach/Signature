@@ -23,5 +23,5 @@ public:
 	WriteFileMngr(std::shared_ptr<ISettings>& settings);
 
 	bool Writing(std::shared_ptr<IItemWrite>& item);
-	bool InitializeWork();
+	bool InitializeWork(size_t size);
 };

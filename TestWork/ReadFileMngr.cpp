@@ -2,13 +2,13 @@
 #include "ISettings.h"
 #include "ItemConveyer.h"
 #include "ReadFileIO.h"
+#include <iostream>
 
-using namespace std;
 
 ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings) : m_settings(settings){
 }
 
-bool ReadFileMngr::InitializeWork() {
+bool ReadFileMngr::InitializeWork(size_t& size) {
 
 	m_hfileSrc = ::CreateFile(m_settings->GetInFileName().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 
@@ -18,6 +18,8 @@ bool ReadFileMngr::InitializeWork() {
 	if (!::GetFileSizeEx(m_hfileSrc, &m_SrcFileSize)) {
 		return false;
 	}
+
+	size = (size_t)m_SrcFileSize.QuadPart;
 
 	m_offset = 0ull;
 
@@ -31,8 +33,10 @@ bool ReadFileMngr::Reading(std::shared_ptr<IItemRead>& item) {
 	item->GetBuff().resize(m_settings->GetChunkSize());
 	item->SetOffset(m_offset.fetch_add(m_settings->GetChunkSize()));
 
-	if (item->GetOffset() >= m_hfileSrc)
+	if (item->GetOffset() >= m_SrcFileSize.QuadPart) {
+		std::cout << "Done" << std::endl;
 		return false;
+	}
 
 	return m_io->StartIO(item);
 }

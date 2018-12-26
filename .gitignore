@@ -3,3 +3,6 @@ Debug/
 x64/
 TestWork.VC.db
 .vs
+*.opendb
+*.avi
+*.md5
