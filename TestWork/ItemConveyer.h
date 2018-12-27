@@ -15,9 +15,7 @@ public:
 	virtual size_t GetOffset() const  = 0;
 	virtual std::vector<unsigned char>& GetBuff() = 0;
 
-	virtual void Callback(void) = 0;
-	virtual ~IItemRead() {
-	}
+	virtual void CallbackRead(void) = 0;
 };
 
 
@@ -38,10 +36,7 @@ public:
 	virtual size_t GetOffset() const = 0;
 	virtual std::vector<unsigned char>& GetHash() = 0;
 	virtual std::vector<unsigned char>& GetBuff() = 0;
-	virtual void Callback(void) = 0;
-
-	virtual ~IItemWrite() {
-	}
+	virtual void CallbackWrite(void) = 0;
 };
 
 class ItemConveyer : public IItemRead, public IItemHash, public IItemWrite, public std::enable_shared_from_this<ItemConveyer> {
@@ -50,13 +45,15 @@ class ItemConveyer : public IItemRead, public IItemHash, public IItemWrite, publ
 	std::vector<unsigned char>	m_buff;
 	std::vector<unsigned char>	m_hash;
 
-	std::function<void(void)> m_fCallback;
+	std::function<void(void)> m_fCallbackRead;
+	std::function<void(void)> m_fCallbackWrite;
 
 	void SetOffset(size_t);
 	size_t GetOffset() const;
 	std::vector<unsigned char>& GetBuff();
 	std::vector<unsigned char>& GetHash();
-	void Callback(void);
+	void CallbackRead(void);
+	void CallbackWrite(void);
 
 public:
 

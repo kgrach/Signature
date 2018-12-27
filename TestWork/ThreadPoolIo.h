@@ -55,7 +55,7 @@ namespace ThreadPool {
 		ThreadPoolIO(HANDLE h, ThreadPool &tp = GetMainThreadPool()) : m_hFile(h) {
 			m_item = CreateThreadpoolIo(m_hFile, callback, this, tp);
 
-			for (auto i = 0; i < GetMainThreadPool().GetMaxThreadCount(); i++) {
+			for (auto i = 0; i < GetMainThreadPool().GetMinThreadCount(); i++) {
 				m_ov.emplace_back(std::make_shared<IOOverlapped<T>>(i));
 				m_ov_complete.push(m_ov[i]);
 			}

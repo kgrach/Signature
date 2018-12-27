@@ -2,7 +2,7 @@
 
 
 std::shared_ptr<IItemRead> ItemConveyer::GetItemReadIface(std::function<void(void)>&& f) {
-	m_fCallback = std::move(f);
+	m_fCallbackRead = std::move(f);
 	return shared_from_this();
 }
 
@@ -11,7 +11,7 @@ std::shared_ptr<IItemHash> ItemConveyer::GetItemHashIface() {
 }
 
 std::shared_ptr<IItemWrite> ItemConveyer::GetItemWriteIface(std::function<void(void)>&& f) {
-	m_fCallback = std::move(f);
+	m_fCallbackWrite = std::move(f);
 	return shared_from_this();
 }
 
@@ -31,6 +31,9 @@ size_t ItemConveyer::GetOffset() const {
 	return m_offset;
 }
 
-void ItemConveyer::Callback(void) {
-	return m_fCallback();
+void ItemConveyer::CallbackRead(void) {
+	return m_fCallbackRead();
+}
+void ItemConveyer::CallbackWrite(void) {
+	return m_fCallbackWrite();
 }

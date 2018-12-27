@@ -42,10 +42,6 @@ void WorkManager::ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
 
 void WorkManager::WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
 
-/*	{
-		auto p = item->GetItemReadIface([item, this]() mutable { return this->ReadCompleteChunck(item); });
-	}*/
-
 	m_ReadFileMngr->Reading(item->GetItemReadIface([item, this]() mutable { return this->ReadCompleteChunck(item); }));
 }
 
