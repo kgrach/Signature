@@ -1,61 +1,37 @@
 #pragma once
 
 #include <Windows.h>
+#include <atomic>
+#include <functional>
+
 
 namespace ThreadPool {
 
 	class ThreadPool {
+		
 		PTP_POOL m_tp;
 		TP_CALLBACK_ENVIRON m_env;
+		PTP_CLEANUP_GROUP m_clean_group;
 		unsigned long m_maxThreadCnt, m_minThreadCnt;
 
-		bool m_is_starting;
+		std::atomic<bool> m_is_starting;
+
+		static void CleanGroupCallBack(PVOID ObjectContext, PVOID CleanupContext);
+
 	public:
 		
-		ThreadPool() : m_is_starting(false) {
-			SYSTEM_INFO sysinfo;
-			GetSystemInfo(&sysinfo);
+		ThreadPool();
+		~ThreadPool();
 
-			m_maxThreadCnt = 2 * sysinfo.dwNumberOfProcessors;
-			m_minThreadCnt = sysinfo.dwNumberOfProcessors;
-		}
+		void StartingWork();
+		void StopWork(std::function<void(void)>* fStopWorkComplete,  bool cancel_pending_request = true);
 
-		void StartingWork() {
-			m_tp = CreateThreadpool(nullptr);
-			InitializeThreadpoolEnvironment(&m_env);
+		operator PTP_CALLBACK_ENVIRON();
 
-			SetThreadpoolCallbackPriority(&m_env, TP_CALLBACK_PRIORITY_NORMAL);
-			SetThreadpoolCallbackPool(&m_env, m_tp);
+		unsigned long GetMaxThreadCount();
+		unsigned long GetMinThreadCount();
 
-			SetThreadpoolThreadMaximum(m_tp, m_maxThreadCnt);
-			SetThreadpoolThreadMinimum(m_tp, m_minThreadCnt);
-
-			m_is_starting = true;
-		}
-
-		unsigned long GetMaxThreadCount() {
-			return m_maxThreadCnt;
-		}
-
-		unsigned long GetMinThreadCount() {
-			return m_minThreadCnt;
-		}
-
-		bool IsStarted() {
-			return m_is_starting;
-		}
-
-		~ThreadPool() {
-
-			if (m_is_starting) {
-				DestroyThreadpoolEnvironment(&m_env);
-				CloseThreadpool(m_tp);
-			}
-		}
-
-		operator PTP_CALLBACK_ENVIRON() {
-			return &m_env;
-		}
+		bool IsStarted();
 	};
 
 	ThreadPool& GetMainThreadPool();

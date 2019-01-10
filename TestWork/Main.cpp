@@ -1,6 +1,9 @@
 #include "Settings.h"
 #include "WorkManager.h"
 
+
+#include <conio.h>
+
 void main(int argc, char** argv) {
 
 	auto settings = std::make_shared<Settings>();
@@ -12,9 +15,13 @@ void main(int argc, char** argv) {
 	WorkManager mngr(settings->GetInterface());
 	mngr.StartWork();
 
-	while (true) {
-		Sleep(100000);
+	getch();
+
+	mngr.StopWork();
+
+	while (1) {
+		Sleep(100);
 	}
 	
-	mngr.StopWork();
+	//mngr.StopWork();
 }

@@ -61,7 +61,6 @@ namespace ThreadPool {
 			}
 		}
 
-
 		~ThreadPoolIO() {
 			CloseThreadpoolIo(m_item);
 		}
@@ -78,15 +77,19 @@ namespace ThreadPool {
 			DWORD err = ERROR_SUCCESS;
 			bool ret = IoPending(ov_item);
 
-			if (ret == false && (err = GetLastError()) != ERROR_IO_PENDING) {
+			if (!(ret == false && (err = GetLastError()) == ERROR_IO_PENDING)) {
 				CancelThreadpoolIo(m_item);
 				//this->IoCompletion(0, 0, nullptr);
-
 				return false;
 			}
-
+			
 			return true;
 		};
+
+		void CancelIO() {
+			CancelThreadpoolIo(m_item);
+		}
+
 	};
 }
 

@@ -27,7 +27,7 @@ bool WriteFileMngr::InitializeWork(size_t size) {
 
 bool WriteFileMngr::Writing(std::shared_ptr<IItemWrite>& item) {
 
-	//item->SetOffset(item->GetOffset()/ item->GetHash().size());
+	item->SetOffset(item->GetOffset() / m_settings->GetChunkSize() * item->GetHash().size());
 
 	return m_io->StartIO(item);
 }

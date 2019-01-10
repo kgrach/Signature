@@ -17,14 +17,12 @@ template <>
 void ThreadPool::ThreadPoolIO<IItemRead>::IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred) {
 
 	IOOverlapped<IItemRead> *p = static_cast<IOOverlapped<IItemRead>*>(Overlapped);
-	std::shared_ptr<IItemRead> item = p->m_item;
+	std::shared_ptr<IItemRead> item = std::move(p->m_item);
 
 	m_ov_complete.push(m_ov[p->m_num]);
 
 	item->GetBuff().resize((size_t)NumberOfBytesTransferred);
 	item->CallbackRead();
-	
-	//p->m_item = nullptr;
 }
 
 
