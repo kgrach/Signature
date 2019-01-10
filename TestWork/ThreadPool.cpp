@@ -32,12 +32,7 @@ namespace ThreadPool {
 
 		m_clean_group = ::CreateThreadpoolCleanupGroup();
 
-		/*auto fCleanComplete = [](PVOID ObjectContext, PVOID CleanupContext) {
-			std::cout <<  " obj =" << std::to_string((unsigned __int64)ObjectContext) << std::endl;
-		};*/
-
 		::SetThreadpoolCallbackCleanupGroup(&m_env, m_clean_group, nullptr);
-
 		m_is_starting = true;
 	}
 

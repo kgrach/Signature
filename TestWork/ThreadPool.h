@@ -24,6 +24,7 @@ namespace ThreadPool {
 		void StartingWork();
 		void StopWork(bool cancel_pending_request = true);
 
+
 		operator PTP_CALLBACK_ENVIRON();
 
 		unsigned long GetMaxThreadCount();

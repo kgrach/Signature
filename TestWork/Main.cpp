@@ -24,6 +24,4 @@ void main(int argc, char** argv) {
 	while (1) {
 		Sleep(100);
 	}
-	
-	//mngr.StopWork();
 }

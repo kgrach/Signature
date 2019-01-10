@@ -88,6 +88,11 @@ namespace ThreadPool {
 			
 			return true;
 		};
+
+		void CancelIO() {
+			CancelThreadpoolIo(m_item);
+		}
+
 	};
 }
 
