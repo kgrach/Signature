@@ -41,19 +41,22 @@ namespace ThreadPool {
 		HANDLE m_hFile;
 		PTP_IO m_item;
 
+		std::vector<std::shared_ptr<IOOverlapped<T>>> m_ov;
+		concurrency::concurrent_queue<std::shared_ptr<IOOverlapped<T>>> m_ov_complete;
+
+
 		ThreadPoolIO(const ThreadPoolIO&) = delete;
 		ThreadPoolIO& operator=(const ThreadPoolIO&) = delete;
 
 		bool IoPending(std::shared_ptr<IOOverlapped<T>>& );
 		void IoCompletion(OVERLAPPED* Overlapped, ULONG IoResult, PLARGE_INTEGER NumberOfBytesTransferred);
 
-		std::vector<std::shared_ptr<IOOverlapped<T>>> m_ov;
-		concurrency::concurrent_queue<std::shared_ptr<IOOverlapped<T>>> m_ov_complete;
-
 	public:
 
 		ThreadPoolIO(HANDLE h, ThreadPool &tp = GetMainThreadPool()) : m_hFile(h) {
 			m_item = CreateThreadpoolIo(m_hFile, callback, this, tp);
+
+			//std::cout << typeid(*this).name() << "=" << std::to_string((unsigned __int64)this) << std::endl;
 
 			for (auto i = 0; i < GetMainThreadPool().GetMinThreadCount(); i++) {
 				m_ov.emplace_back(std::make_shared<IOOverlapped<T>>(i));
@@ -61,9 +64,8 @@ namespace ThreadPool {
 			}
 		}
 
-
 		~ThreadPoolIO() {
-			CloseThreadpoolIo(m_item);
+			::CloseThreadpoolIo(m_item);
 		}
 
 		bool StartIO(std::shared_ptr<T>& item) {
@@ -78,13 +80,12 @@ namespace ThreadPool {
 			DWORD err = ERROR_SUCCESS;
 			bool ret = IoPending(ov_item);
 
-			if (ret == false && (err = GetLastError()) != ERROR_IO_PENDING) {
+			if (!(ret == false && (err = GetLastError()) == ERROR_IO_PENDING)) {
 				CancelThreadpoolIo(m_item);
 				//this->IoCompletion(0, 0, nullptr);
-
 				return false;
 			}
-
+			
 			return true;
 		};
 	};
