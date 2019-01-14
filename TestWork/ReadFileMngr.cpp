@@ -10,12 +10,14 @@ ReadFileMngr::ReadFileMngr(std::shared_ptr<ISettings>& settings) : m_settings(se
 
 bool ReadFileMngr::InitializeWork(size_t& size) {
 
-	m_hfileSrc = ::CreateFile(m_settings->GetInFileName().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+	m_hfileSrc = std::shared_ptr<HANDLE>(new HANDLE(INVALID_HANDLE_VALUE), [](HANDLE* p) { ::CloseHandle(*p); delete p; });
 
-	if (!m_hfileSrc)
+	*m_hfileSrc = ::CreateFile(m_settings->GetInFileName().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+
+	if (*m_hfileSrc == INVALID_HANDLE_VALUE)
 		return false;
 
-	if (!::GetFileSizeEx(m_hfileSrc, &m_SrcFileSize)) {
+	if (!::GetFileSizeEx(*m_hfileSrc, &m_SrcFileSize)) {
 		return false;
 	}
 

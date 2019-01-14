@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "ScopeHandle.h"
+#include <windows.h>
 
 class ISettings;
 class IItemWrite;
@@ -13,9 +13,8 @@ namespace ThreadPool {
 
 class WriteFileMngr {
 
-	std::shared_ptr<ISettings> m_settings;
-
-	ScopeHandle	m_hfileDest;
+	std::shared_ptr<ISettings>	m_settings;
+	std::shared_ptr<HANDLE>		m_hfileDest;
 
 	std::shared_ptr<ThreadPool::ThreadPoolIO<IItemWrite>>		m_io;
 

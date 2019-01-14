@@ -10,7 +10,7 @@ bool ThreadPool::ThreadPoolIO<IItemWrite>::IoPending(std::shared_ptr<IOOverlappe
 
 	ov_item->SetOffset(ov_item->m_item->GetOffset());
 
-	return ::WriteFile(m_hFile, ov_item->m_item->GetHash().data(), ov_item->m_item->GetHash().size(), NULL, ov) ? true : false;
+	return ::WriteFile(*m_hFile, ov_item->m_item->GetHash().data(), ov_item->m_item->GetHash().size(), NULL, ov) ? true : false;
 }
 
 template <>

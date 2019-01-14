@@ -38,7 +38,7 @@ namespace ThreadPool {
 			io->IoCompletion((OVERLAPPED*)Overlapped, IoResult, (PLARGE_INTEGER)NumberOfBytesTransferred);
 		}
 
-		HANDLE m_hFile;
+		std::shared_ptr<HANDLE> m_hFile;
 		PTP_IO m_item;
 
 		std::vector<std::shared_ptr<IOOverlapped<T>>> m_ov;
@@ -53,10 +53,9 @@ namespace ThreadPool {
 
 	public:
 
-		ThreadPoolIO(HANDLE h, ThreadPool &tp = GetMainThreadPool()) : m_hFile(h) {
-			m_item = CreateThreadpoolIo(m_hFile, callback, this, tp);
+		ThreadPoolIO(std::shared_ptr<HANDLE> &h, ThreadPool &tp = GetMainThreadPool()) : m_hFile(h) {
 
-			//std::cout << typeid(*this).name() << "=" << std::to_string((unsigned __int64)this) << std::endl;
+			m_item = CreateThreadpoolIo(*m_hFile, callback, this, tp);
 
 			for (auto i = 0; i < GetMainThreadPool().GetMinThreadCount(); i++) {
 				m_ov.emplace_back(std::make_shared<IOOverlapped<T>>(i));

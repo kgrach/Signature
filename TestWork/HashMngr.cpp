@@ -7,17 +7,13 @@ using namespace ThreadPool;
 
 
 HashMngr::HashMngr(std::shared_ptr<ISettings>& settings) : m_settings(settings){
-
-	auto fFreeAlg = [](BCRYPT_ALG_HANDLE* p) {
-		::BCryptCloseAlgorithmProvider(*p, 0);
-	};
-
-	m_hAlg = std::shared_ptr<BCRYPT_ALG_HANDLE>(new BCRYPT_ALG_HANDLE(NULL), fFreeAlg);
 }
 
 bool HashMngr::InitializeWork() {
 
 	NTSTATUS status; 
+
+	m_hAlg = std::shared_ptr<BCRYPT_ALG_HANDLE>(new BCRYPT_ALG_HANDLE(NULL), [](BCRYPT_ALG_HANDLE* p) { ::BCryptCloseAlgorithmProvider(*p, 0); delete p; });
 
 	if (!(::BCryptOpenAlgorithmProvider(m_hAlg.get(), BCRYPT_MD5_ALGORITHM, NULL, 0) >=0))
 		return false;
@@ -35,11 +31,7 @@ bool HashMngr::Hashing(std::shared_ptr<IItemHash>& item) {
 	PBYTE                   pbHashObject = NULL;
 	PBYTE                   pbHash = NULL;
 
-	auto fDelHash = [](BCRYPT_ALG_HANDLE* p) {
-		::BCryptDestroyHash(*p);
-	};
-
-	std::shared_ptr<BCRYPT_HASH_HANDLE> m_hHash = std::shared_ptr<BCRYPT_HASH_HANDLE>(new BCRYPT_HASH_HANDLE(NULL), fDelHash);
+	std::shared_ptr<BCRYPT_HASH_HANDLE> m_hHash = std::shared_ptr<BCRYPT_HASH_HANDLE>(new BCRYPT_HASH_HANDLE(NULL), [](BCRYPT_ALG_HANDLE* p) { ::BCryptDestroyHash(*p); delete p; });
 
 	NTSTATUS status;
 	status = ::BCryptGetProperty(*m_hAlg, BCRYPT_OBJECT_LENGTH, (PBYTE)&cbHashObject, sizeof(DWORD), &cbData, 0);

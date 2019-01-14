@@ -157,11 +157,8 @@
     <ClInclude Include="ISettings.h" />
     <ClInclude Include="ItemConveyer.h" />
     <ClInclude Include="ReadFileIO.h" />
-    <ClInclude Include="ScopeHandle.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="ReadFileMngr.h" />
-    <ClInclude Include="ScopeResource.h" />
-    <ClInclude Include="SharedHANDLE.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ThreadPoolIo.h" />
     <ClInclude Include="ThreadPoolTimer.h" />

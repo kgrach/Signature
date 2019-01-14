@@ -10,7 +10,7 @@ bool ThreadPool::ThreadPoolIO<IItemRead>::IoPending(std::shared_ptr<IOOverlapped
 
 	ov_item->SetOffset(ov_item->m_item->GetOffset());
 
-	return ::ReadFile(m_hFile, ov_item->m_item->GetBuff().data(), ov_item->m_item->GetBuff().size(), NULL, ov) ? true : false;
+	return ::ReadFile(*m_hFile, ov_item->m_item->GetBuff().data(), ov_item->m_item->GetBuff().size(), NULL, ov) ? true : false;
 }
 
 template <>

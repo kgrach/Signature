@@ -60,12 +60,6 @@
     <ClInclude Include="WriteFileIO.h">
       <Filter>ThreadPool\IO</Filter>
     </ClInclude>
-    <ClInclude Include="ScopeResource.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="ScopeHandle.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ThreadPoolWork.h">
       <Filter>ThreadPool\Work</Filter>
     </ClInclude>
@@ -74,9 +68,6 @@
     </ClInclude>
     <ClInclude Include="ItemConveyer.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SharedHANDLE.h">
-      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

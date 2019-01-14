@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <atomic>
-#include "ScopeHandle.h"
+#include <windows.h>
 
 class ISettings;
 class IItemRead;
@@ -15,10 +15,9 @@ namespace ThreadPool {
 
 class ReadFileMngr {
 
-	std::shared_ptr<ISettings> m_settings;
-
-	ScopeHandle m_hfileSrc;
-	LARGE_INTEGER m_SrcFileSize;
+	std::shared_ptr<ISettings>	m_settings;
+	std::shared_ptr<HANDLE>		m_hfileSrc;
+	LARGE_INTEGER				m_SrcFileSize;
 
 	std::atomic<unsigned __int64>	m_offset;
 	std::shared_ptr<ThreadPool::ThreadPoolIO<IItemRead>>		m_io;

@@ -26,7 +26,7 @@ bool WorkManager::StartWork() noexcept {
 
 	m_ReadFileMngr->InitializeWork(s);
 	m_HashMngr->InitializeWork();
-	m_WriteFileMngr->InitializeWork(s/16);
+	m_WriteFileMngr->InitializeWork((s / m_settings->GetChunkSize() + (s % m_settings->GetChunkSize() ? 1 : 0)) * 16);
 
 	for (unsigned long i = 0;  i < GetMainThreadPool().GetMinThreadCount(); i++) {
 		m_Items.emplace_back(std::make_shared<ItemConveyer>());
