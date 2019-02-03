@@ -9,6 +9,10 @@
 
 class IItemRead {
 
+protected:
+
+	virtual ~IItemRead() { }
+
 public:
 
 	virtual void SetOffset(size_t) = 0;
@@ -18,17 +22,23 @@ public:
 	virtual void CallbackRead(void) = 0;
 };
 
-
 class IItemHash {
+
+protected:
+
+	virtual ~IItemHash() { }
 
 public:
 
 	virtual std::vector<unsigned char>& GetBuff() = 0;
 	virtual std::vector<unsigned char>& GetHash() = 0;
-
 };
 
 class IItemWrite {
+
+protected:
+	
+	virtual ~IItemWrite() { }
 
 public:
 	 

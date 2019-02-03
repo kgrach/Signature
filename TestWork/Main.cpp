@@ -15,13 +15,14 @@ void main(int argc, char** argv) {
 	WorkManager mngr(settings->GetInterface());
 	mngr.StartWork();
 
-	std::cout << "Press any key to stop operation" << std::endl;
+	std::cout << "Press Esc key to stop operation" << std::endl;
 	
+	while (mngr.IsWorkDone() == false && _kbhit() == 0) {
+		Sleep(1000);
+	}
+
+ 	mngr.StopWork();
+
 	getch();
 
-	mngr.StopWork();
-
-	while (1) {
-		Sleep(100);
-	}
 }

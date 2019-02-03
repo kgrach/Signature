@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <concurrent_queue.h>
+#include <shared_mutex>
 
 #include "ThreadPool.h"
 
@@ -39,7 +40,10 @@ namespace ThreadPool {
 		}
 
 		std::shared_ptr<HANDLE> m_hFile;
+		HANDLE m_hStopEvnt;
+		std::shared_mutex m_StartingLock;
 		PTP_IO m_item;
+		
 
 		std::vector<std::shared_ptr<IOOverlapped<T>>> m_ov;
 		concurrency::concurrent_queue<std::shared_ptr<IOOverlapped<T>>> m_ov_complete;
@@ -55,19 +59,31 @@ namespace ThreadPool {
 
 		ThreadPoolIO(std::shared_ptr<HANDLE> &h, ThreadPool &tp = GetMainThreadPool()) : m_hFile(h) {
 
-			m_item = CreateThreadpoolIo(*m_hFile, callback, this, tp);
+			m_item = ::CreateThreadpoolIo(*m_hFile, callback, this, tp);
 
 			for (auto i = 0; i < GetMainThreadPool().GetMinThreadCount(); i++) {
 				m_ov.emplace_back(std::make_shared<IOOverlapped<T>>(i));
 				m_ov_complete.push(m_ov[i]);
 			}
+
+			m_hStopEvnt = ::CreateEvent(NULL, TRUE, FALSE, "");
 		}
 
 		~ThreadPoolIO() {
+			::CloseHandle(m_hStopEvnt);
 			::CloseThreadpoolIo(m_item);
 		}
 
 		bool StartIO(std::shared_ptr<T>& item) {
+
+			if (::WaitForSingleObject(m_hStopEvnt, 0) == WAIT_OBJECT_0) {
+				return false;
+			}
+
+			std::shared_lock<std::shared_mutex> lock(m_StartingLock, std::try_to_lock_t());
+			
+			if (!lock)
+				return false;
 
 			std::shared_ptr<IOOverlapped<T>> ov_item = nullptr;
 
@@ -75,7 +91,7 @@ namespace ThreadPool {
 			ov_item->m_item = item;
 
 			StartThreadpoolIo(m_item);
-			
+
 			DWORD err = ERROR_SUCCESS;
 			bool ret = IoPending(ov_item);
 
@@ -84,14 +100,16 @@ namespace ThreadPool {
 				//this->IoCompletion(0, 0, nullptr);
 				return false;
 			}
-			
+
 			return true;
 		};
 
-		void CancelIO() {
-			CancelThreadpoolIo(m_item);
-		}
+		void StopWork() {
+			SetEvent(m_hStopEvnt);
 
+			std::unique_lock<std::shared_mutex> lock(m_StartingLock);
+			::WaitForThreadpoolIoCallbacks(m_item, TRUE);
+		}
 	};
 }
 

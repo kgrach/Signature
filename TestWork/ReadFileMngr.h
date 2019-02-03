@@ -27,4 +27,6 @@ public:
 
 	bool Reading(std::shared_ptr<IItemRead>& item);
 	bool InitializeWork(size_t& size);
+
+	void StopWork();
 };

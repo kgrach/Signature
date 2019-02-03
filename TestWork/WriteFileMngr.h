@@ -23,4 +23,6 @@ public:
 
 	bool Writing(std::shared_ptr<IItemWrite>& item);
 	bool InitializeWork(size_t size);
+
+	void StopWork();
 };

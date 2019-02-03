@@ -1,6 +1,9 @@
 #pragma once
 
+#include <shared_mutex>
+
 #include "ThreadPool.h"
+
 
 namespace ThreadPool {
 
@@ -13,6 +16,8 @@ namespace ThreadPool {
 
 		virtual void RunWork() = 0;
 
+		HANDLE m_hStopEvnt;
+		std::shared_mutex m_StartingLock;
 		PTP_WORK m_item;
 
 	protected:
@@ -28,7 +33,24 @@ namespace ThreadPool {
 		}
 
 		void StartWork() {
+
+			if (::WaitForSingleObject(m_hStopEvnt, 0) == WAIT_OBJECT_0) {
+				return;
+			}
+
+			std::shared_lock<std::shared_mutex> lock(m_StartingLock, std::try_to_lock_t());
+
+			if (!lock)
+				return;
+
 			SubmitThreadpoolWork(m_item);
+		}
+
+		void StopWork() {
+			SetEvent(m_hStopEvnt);
+
+			std::unique_lock<std::shared_mutex> lock(m_StartingLock);
+			::WaitForThreadpoolWorkCallbacks(m_item, TRUE);
 		}
 	};
 };

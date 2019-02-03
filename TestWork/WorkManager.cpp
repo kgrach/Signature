@@ -12,9 +12,7 @@ using namespace ThreadPool;
 WorkManager::WorkManager(std::shared_ptr<ISettings>&& settings) : m_settings(std::move(settings)) {
 
 	m_ReadFileMngr = std::make_unique<ReadFileMngr>(m_settings);
-
 	m_HashMngr = std::make_unique<HashMngr>(m_settings);
-
 	m_WriteFileMngr = std::make_unique<WriteFileMngr>(m_settings);
 }
 
@@ -31,14 +29,19 @@ bool WorkManager::StartWork() noexcept {
 	for (unsigned long i = 0;  i < GetMainThreadPool().GetMinThreadCount(); i++) {
 		m_Items.emplace_back(std::make_shared<ItemConveyer>());
 		WriteCompleteChunck(m_Items[i]);
+		m_thread_used++;
 	}
 
 	return true;
 }
 
 void WorkManager::StopWork() {
+	m_ReadFileMngr->StopWork();
+	m_WriteFileMngr->StopWork();
+}
 
-	GetMainThreadPool().StopWork();
+bool WorkManager::IsWorkDone() {
+	return m_thread_used == 0;
 }
 
 void WorkManager::ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
@@ -48,6 +51,8 @@ void WorkManager::ReadCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
 
 void WorkManager::WriteCompleteChunck(std::shared_ptr<ItemConveyer>& item) {
 
-	m_ReadFileMngr->Reading(item->GetItemReadIface([item, this]() mutable { return this->ReadCompleteChunck(item); }));
+	if (!m_ReadFileMngr->Reading(item->GetItemReadIface([item, this]() mutable { return this->ReadCompleteChunck(item); }))) {
+		m_thread_used--;
+	}
 }
 

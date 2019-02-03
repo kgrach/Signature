@@ -13,7 +13,7 @@
     <LocalDebuggerWorkingDirectory>D:\Work\Test_c++\TestWork\Debug\</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>D:\Work\Test_c++\TestWork\TestWork\01_vovka_v_tridev_tsarstve.avi D:\Work\Test_c++\TestWork\TestWork\01_vovka_v_tridev_tsarstve_cpy.avi 1048576</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>D:\2.dat D:\hash.dat 10485760</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommand>TestWork.exe</LocalDebuggerCommand>
     <LocalDebuggerWorkingDirectory>D:\Work\Test_c++\TestWork\x64\Debug\</LocalDebuggerWorkingDirectory>

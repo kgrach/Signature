@@ -2,8 +2,9 @@
 
 #include <windows.h>
 #include <bcrypt.h>
+#include <memory>
 
-#include "HashWork.h"
+//#include "HashWork.h"
 
 class ISettings;
 class IItemHash;
@@ -18,6 +19,5 @@ public:
 
 	bool InitializeWork();
 	bool Hashing(std::shared_ptr<IItemHash>&);
-
 };
 

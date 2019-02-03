@@ -25,6 +25,9 @@
     <Filter Include="ThreadPool\Work">
       <UniqueIdentifier>{6f394b07-d52b-47e2-8120-001c319cb862}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThreadPool\Wait">
+      <UniqueIdentifier>{6235e151-0d61-4bf7-ba50-29e27ff98d84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPool.h">
@@ -63,11 +66,11 @@
     <ClInclude Include="ThreadPoolWork.h">
       <Filter>ThreadPool\Work</Filter>
     </ClInclude>
-    <ClInclude Include="HashWork.h">
-      <Filter>ThreadPool\Work</Filter>
-    </ClInclude>
     <ClInclude Include="ItemConveyer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolWait.h">
+      <Filter>ThreadPool\Wait</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -91,9 +94,6 @@
     </ClCompile>
     <ClCompile Include="WriteFileMngr.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HashWork.cpp">
-      <Filter>ThreadPool\Work</Filter>
     </ClCompile>
     <ClCompile Include="ItemConveyer.cpp">
       <Filter>Source Files</Filter>

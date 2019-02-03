@@ -18,6 +18,8 @@ class WorkManager {
 	std::unique_ptr<HashMngr>		m_HashMngr;
 	std::unique_ptr<WriteFileMngr>	m_WriteFileMngr;
 
+	std::atomic_long m_thread_used = {0};
+
 	std::vector<std::shared_ptr<ItemConveyer>> m_Items;
 	concurrency::concurrent_queue<std::shared_ptr<ItemConveyer>> m_ItemsComplete;
 	
@@ -28,4 +30,5 @@ public:
 	WorkManager(std::shared_ptr<ISettings>&& settings);
 	bool StartWork() noexcept;
 	void StopWork();
+	bool IsWorkDone();
 };

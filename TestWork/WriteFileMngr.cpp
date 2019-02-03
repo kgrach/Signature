@@ -22,7 +22,7 @@ bool WriteFileMngr::InitializeWork(size_t size) {
 	SetFilePointerEx(*m_hfileDest, _size, NULL, FILE_BEGIN);
 	SetEndOfFile(*m_hfileDest);
 
-	m_io = std::move(std::make_shared<ThreadPool::ThreadPoolIO<IItemWrite>>(m_hfileDest));
+	m_io = std::make_shared<ThreadPool::ThreadPoolIO<IItemWrite>>(m_hfileDest);
 
 	return true;
 }
@@ -32,4 +32,8 @@ bool WriteFileMngr::Writing(std::shared_ptr<IItemWrite>& item) {
 	item->SetOffset(item->GetOffset() / m_settings->GetChunkSize() * item->GetHash().size());
 
 	return m_io->StartIO(item);
+}
+
+void WriteFileMngr::StopWork() {
+	m_io->StopWork();
 }

@@ -3,9 +3,6 @@
 #include "ItemConveyer.h"
 #include <winternl.h>
 
-using namespace ThreadPool;
-
-
 HashMngr::HashMngr(std::shared_ptr<ISettings>& settings) : m_settings(settings){
 }
 
@@ -20,8 +17,6 @@ bool HashMngr::InitializeWork() {
 
 	return true;
 }
-
-
 
 bool HashMngr::Hashing(std::shared_ptr<IItemHash>& item) {
 

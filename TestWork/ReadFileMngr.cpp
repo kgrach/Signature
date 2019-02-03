@@ -25,7 +25,7 @@ bool ReadFileMngr::InitializeWork(size_t& size) {
 
 	m_offset = 0ull;
 
-	m_io = std::move(std::make_shared<ThreadPool::ThreadPoolIO<IItemRead>>(m_hfileSrc));
+	m_io = std::make_shared<ThreadPool::ThreadPoolIO<IItemRead>>(m_hfileSrc);
 
 	return true;
 }
@@ -41,4 +41,8 @@ bool ReadFileMngr::Reading(std::shared_ptr<IItemRead>& item) {
 	}
 
 	return m_io->StartIO(item);
+}
+
+void ReadFileMngr::StopWork() {
+	m_io->StopWork();
 }
